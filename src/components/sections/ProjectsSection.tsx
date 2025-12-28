@@ -50,7 +50,7 @@ export function ProjectsSection() {
                                 </div>
 
                                 <div className="pt-4 flex items-center gap-4">
-                                    <Link href="https://github.com/aakashyadav27" target="_blank" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-emerald-400 transition-colors">
+                                    <Link href="https://github.com/aakashyadav27/ai-code-review-automation" target="_blank" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-emerald-400 transition-colors">
                                         <Github className="w-4 h-4" />
                                         View Source
                                     </Link>
