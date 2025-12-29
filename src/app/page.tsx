@@ -1,7 +1,8 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { Hero } from "@/components/sections/Hero";
 import { AboutSection } from "@/components/sections/AboutSection";
-import { ProjectsSection } from "@/components/sections/ProjectsSection";
+import { ProjectsShuffleSection } from "@/components/sections/ProjectsShuffleSection";
+import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 
 export default function Home() {
@@ -9,7 +10,8 @@ export default function Home() {
     <main className="min-h-screen bg-background">
       <SiteHeader />
       <Hero />
-      <ProjectsSection />
+      <ProjectsShuffleSection />
+      <ExperienceSection />
       <AboutSection />
       <ContactSection />
     </main>
