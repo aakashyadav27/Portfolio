@@ -1,0 +1,307 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --animate-grid: grid 15s linear infinite;
+  @keyframes grid {
+  0% {
+    transform: translateY(-50%);
+    }
+  100% {
+    transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow: hidden;
+  }
+}
+
+/* Custom scrollbar for Windows 95 style */
+.os-scrollbar::-webkit-scrollbar {
+  width: 16px;
+}
+
+.os-scrollbar::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  border-left: 1px solid #808080;
+}
+
+.os-scrollbar::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  border-right-color: #404040;
+  border-bottom-color: #404040;
+}
+
+.os-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d4d4d4;
+}
+
+.os-scrollbar::-webkit-scrollbar-button {
+  background: #c0c0c0;
+  border: 2px outset #dfdfdf;
+  border-right-color: #404040;
+  border-bottom-color: #404040;
+  height: 16px;
+}
+
+/* Retro font fallback */
+@font-face {
+  font-family: 'MS Sans Serif';
+  src: local('MS Sans Serif'), local('Segoe UI'), local('Arial');
+}
+
+/* Disable text selection for OS elements */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ============================================
+   CRT Monitor Effects
+   ============================================ */
+
+/* Retro font stack for Windows XP style */
+.retro-font {
+  font-family: 'Tahoma', 'MS Sans Serif', 'Segoe UI', Arial, sans-serif;
+}
+
+/* CRT Flicker animation - very subtle */
+@keyframes crt-flicker {
+  0% { opacity: 0.97; }
+  2% { opacity: 0.95; }
+  4% { opacity: 0.98; }
+  6% { opacity: 0.96; }
+  8% { opacity: 0.99; }
+  10% { opacity: 0.94; }
+  12% { opacity: 0.98; }
+  14% { opacity: 0.97; }
+  16% { opacity: 0.95; }
+  18% { opacity: 0.99; }
+  20% { opacity: 0.96; }
+  22% { opacity: 0.98; }
+  24% { opacity: 0.95; }
+  26% { opacity: 0.97; }
+  28% { opacity: 0.99; }
+  30% { opacity: 0.94; }
+  32% { opacity: 0.98; }
+  34% { opacity: 0.96; }
+  36% { opacity: 0.99; }
+  38% { opacity: 0.95; }
+  40% { opacity: 0.97; }
+  42% { opacity: 0.98; }
+  44% { opacity: 0.94; }
+  46% { opacity: 0.99; }
+  48% { opacity: 0.96; }
+  50% { opacity: 0.98; }
+  52% { opacity: 0.95; }
+  54% { opacity: 0.97; }
+  56% { opacity: 0.99; }
+  58% { opacity: 0.94; }
+  60% { opacity: 0.98; }
+  62% { opacity: 0.96; }
+  64% { opacity: 0.99; }
+  66% { opacity: 0.95; }
+  68% { opacity: 0.97; }
+  70% { opacity: 0.98; }
+  72% { opacity: 0.94; }
+  74% { opacity: 0.99; }
+  76% { opacity: 0.96; }
+  78% { opacity: 0.98; }
+  80% { opacity: 0.95; }
+  82% { opacity: 0.97; }
+  84% { opacity: 0.99; }
+  86% { opacity: 0.94; }
+  88% { opacity: 0.98; }
+  90% { opacity: 0.96; }
+  92% { opacity: 0.99; }
+  94% { opacity: 0.95; }
+  96% { opacity: 0.97; }
+  98% { opacity: 0.98; }
+  100% { opacity: 0.96; }
+}
+
+.crt-flicker {
+  animation: crt-flicker 0.15s infinite;
+  background: transparent;
+}
+
+/* CRT Scanline scroll animation (optional, subtle) */
+@keyframes crt-scanline-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+
+/* Turn on effect - screen warming up */
+@keyframes crt-turn-on {
+  0% {
+    transform: scale(1, 0.8) translate(0, 0);
+    filter: brightness(30);
+    opacity: 1;
+  }
+  3.5% {
+    transform: scale(1, 0.8) translate(0, 100%);
+  }
+  3.6% {
+    transform: scale(1, 0.8) translate(0, -100%);
+    opacity: 1;
+  }
+  9% {
+    transform: scale(1.3, 0.6) translate(0, 100%);
+    filter: brightness(30);
+    opacity: 0;
+  }
+  11% {
+    transform: scale(1, 1) translate(0, 0);
+    filter: contrast(0) brightness(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1, 1) translate(0, 0);
+    filter: contrast(1) brightness(1.2) saturate(1.3);
+    opacity: 1;
+  }
+}
+
+.crt-container {
+  /* Slight color adjustments to mimic CRT phosphor */
+  filter: contrast(1.1) saturate(1.15);
+}
+
+/* Optional: Apply turn-on animation on page load */
+.crt-boot {
+  animation: crt-turn-on 2s ease-out forwards;
+}
+
+/* CRT screen bezel effect (optional) */
+.crt-bezel {
+  border-radius: 20px / 18px;
+  box-shadow:
+    inset 0 0 100px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Slight color aberration on edges */
+.crt-aberration {
+  text-shadow:
+    0.5px 0 0 rgba(255, 0, 0, 0.3),
+    -0.5px 0 0 rgba(0, 255, 255, 0.3);
+}
