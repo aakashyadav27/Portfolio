@@ -2,7 +2,7 @@
 
 import { Suspense, useRef, useEffect, useState, useCallback } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Environment } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Environment, useProgress } from "@react-three/drei";
 import { Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { DeskModel } from "./DeskModel";
@@ -176,6 +176,59 @@ function LoadingFallback() {
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color="#333333" wireframe />
     </mesh>
+  );
+}
+
+// Loading overlay that shows progress while 3D assets load
+function LoadingOverlay() {
+  const { progress, active } = useProgress();
+
+  if (!active && progress === 100) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#000",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+        fontFamily: "monospace",
+      }}
+    >
+      <div style={{ color: "#00ff00", fontSize: "18px", marginBottom: "20px" }}>
+        AAKASH PORTFOLIO BIOS v2.0
+      </div>
+      <div style={{ color: "#aaa", fontSize: "14px", marginBottom: "10px" }}>
+        Loading 3D Assets...
+      </div>
+      <div
+        style={{
+          width: "300px",
+          height: "20px",
+          backgroundColor: "#333",
+          border: "2px solid #666",
+        }}
+      >
+        <div
+          style={{
+            width: `${progress}%`,
+            height: "100%",
+            backgroundColor: "#00aa00",
+            transition: "width 0.3s ease",
+          }}
+        />
+      </div>
+      <div style={{ color: "#666", fontSize: "12px", marginTop: "8px" }}>
+        {Math.round(progress)}% Complete
+      </div>
+    </div>
   );
 }
 
@@ -400,10 +453,16 @@ export function Scene({
     };
   }, []);
 
+  const { progress: loadProgress, active: isLoadingAssets } = useProgress();
+  const assetsLoaded = !isLoadingAssets && loadProgress === 100;
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Name and time overlay - shown during 3D scene, hidden after zoom */}
-      {!showOS && <NameOverlay />}
+      {/* Loading overlay - shown while 3D assets are loading */}
+      {!assetsLoaded && <LoadingOverlay />}
+
+      {/* Name and time overlay - shown during 3D scene after assets loaded, hidden after zoom */}
+      {!showOS && assetsLoaded && <NameOverlay />}
 
       {/* Retro OS Overlay - shown after zoom completes, expands to fullscreen after boot */}
       {showOS && (
