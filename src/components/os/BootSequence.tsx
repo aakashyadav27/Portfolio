@@ -8,7 +8,7 @@ interface BootSequenceProps {
 }
 
 const BOOT_MESSAGES = [
-  { text: "AAKASH BIOS (C) 2024 Aakash Yadav", delay: 0 },
+  { text: `AAKASH BIOS (C) ${new Date().getFullYear()} Aakash Yadav`, delay: 0 },
   { text: "AI PORTFOLIO SYSTEM v2.0", delay: 100 },
   { text: "", delay: 200 },
   { text: "CPU: AI Engineer Brain @ 4.0GHz", delay: 300 },

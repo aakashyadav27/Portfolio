@@ -7,11 +7,12 @@ interface LoadingScreenProps {
   onComplete?: () => void;
   assetsReady?: boolean;
   assetsProgress?: number;
+  isMobile?: boolean;
 }
 
 const BOOT_LINES = [
   { text: "AAKASH PORTFOLIO BIOS v2.0", delay: 0 },
-  { text: "Copyright (C) 2024 Aakash Yadav", delay: 200 },
+  { text: `Copyright (C) ${new Date().getFullYear()} Aakash Yadav`, delay: 200 },
   { text: "", delay: 300 },
   { text: "Initializing AI Systems...", delay: 400 },
   { text: "Loading Neural Networks... OK", delay: 700 },
@@ -21,7 +22,7 @@ const BOOT_LINES = [
   { text: "Starting Portfolio Environment...", delay: 1600 },
 ];
 
-export function LoadingScreen({ onComplete, assetsReady = false, assetsProgress = 0 }: LoadingScreenProps) {
+export function LoadingScreen({ onComplete, assetsReady = false, assetsProgress = 0, isMobile = false }: LoadingScreenProps) {
   const [hasClicked, setHasClicked] = useState(false);
   const [bootTextComplete, setBootTextComplete] = useState(false);
   const [lines, setLines] = useState<string[]>([]);
@@ -115,6 +116,18 @@ export function LoadingScreen({ onComplete, assetsReady = false, assetsProgress 
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
+          {/* Mobile warning like Henry Heffernan's site */}
+          {isMobile && (
+            <div style={{
+              color: '#ffff00',
+              fontSize: '12px',
+              marginBottom: '15px',
+              lineHeight: '1.5'
+            }}>
+              WARNING: This experience is best viewed on<br />
+              a desktop or laptop computer.
+            </div>
+          )}
           <motion.div
             animate={{
               scale: [1, 1.05, 1],
@@ -131,7 +144,7 @@ export function LoadingScreen({ onComplete, assetsReady = false, assetsProgress 
               cursor: 'pointer',
             }}
           >
-            CLICK ANYWHERE TO ENTER
+            {isMobile ? 'TAP TO ENTER' : 'CLICK ANYWHERE TO ENTER'}
           </motion.div>
         </motion.div>
       )}

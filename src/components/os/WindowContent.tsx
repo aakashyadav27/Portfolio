@@ -59,7 +59,7 @@ export function IEHomeContent() {
         <div className="relative z-10 flex flex-1 flex-col items-center justify-center overflow-hidden bg-[#c5d5c0]">
           {/* Name - Large decorative font */}
           <h1
-            className="mb-2 text-center text-5xl font-bold text-[#1a1a1a]"
+            className="mb-2 text-center text-3xl sm:text-5xl font-bold text-[#1a1a1a] px-4"
             style={{
               fontFamily: DECORATIVE_FONT,
               letterSpacing: "0.02em",
@@ -71,25 +71,25 @@ export function IEHomeContent() {
 
           {/* Subtitle */}
           <p
-            className="mb-8 text-center text-lg tracking-wide text-[#333]"
+            className="mb-6 sm:mb-8 text-center text-base sm:text-lg tracking-wide text-[#333]"
             style={{ fontFamily: DECORATIVE_FONT }}
           >
             AI Engineer
           </p>
 
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-6">
+          {/* Navigation Links - responsive wrap */}
+          <nav className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 px-4">
             {navItems.map((item, index) => (
-              <div key={item.id} className="flex items-center gap-6">
+              <div key={item.id} className="flex items-center gap-2 sm:gap-6">
                 <button
                   onClick={() => setCurrentPage(item.id)}
-                  className="text-sm tracking-wider text-[#000080] underline decoration-1 underline-offset-2 transition-colors hover:text-[#0000cc]"
+                  className="text-xs sm:text-sm tracking-wider text-[#000080] underline decoration-1 underline-offset-2 transition-colors hover:text-[#0000cc]"
                   style={{ fontFamily: DECORATIVE_FONT }}
                 >
                   {item.label}
                 </button>
                 {index < navItems.length - 1 && (
-                  <span className="text-[#808080]">|</span>
+                  <span className="text-[#808080] hidden sm:inline">|</span>
                 )}
               </div>
             ))}
@@ -98,7 +98,7 @@ export function IEHomeContent() {
 
         {/* Footer */}
         <div className="relative z-10 border-t border-[#a0a0a0] bg-[#c5d5c0] px-4 py-2 text-center text-xs text-[#666]">
-          © Copyright 2024 Aakash Yadav
+          © Copyright {new Date().getFullYear()} Aakash Yadav
         </div>
       </div>
     );
@@ -131,8 +131,8 @@ export function IEHomeContent() {
 
       {/* Main Content with Sidebar */}
       <div className="relative z-10 flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-[140px] border-r border-[#a0a0a0] bg-[#b8c8b3] p-4">
+        {/* Sidebar - hidden on mobile */}
+        <div className="hidden sm:block w-[140px] border-r border-[#a0a0a0] bg-[#b8c8b3] p-4 shrink-0">
           <div className="mb-4">
             <h2
               className="text-lg font-bold text-[#1a1a1a]"
@@ -178,7 +178,33 @@ export function IEHomeContent() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-[#d0e0cc] p-6">
+        <div className="flex-1 overflow-auto bg-[#d0e0cc] p-3 sm:p-6">
+          {/* Mobile nav - shown only on mobile */}
+          <div className="sm:hidden flex flex-wrap gap-2 mb-4 pb-2 border-b border-[#a0a0a0]">
+            <button
+              onClick={() => setCurrentPage("home")}
+              className={`text-xs px-2 py-1 rounded ${
+                currentPage === "home"
+                  ? "bg-[#000080] text-white"
+                  : "bg-[#b8c8b3] text-[#000080]"
+              }`}
+            >
+              HOME
+            </button>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setCurrentPage(item.id)}
+                className={`text-xs px-2 py-1 rounded ${
+                  currentPage === item.id
+                    ? "bg-[#000080] text-white"
+                    : "bg-[#b8c8b3] text-[#000080]"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
           {renderContent()}
         </div>
       </div>
@@ -186,7 +212,7 @@ export function IEHomeContent() {
       {/* Footer / Status Bar */}
       <div className="relative z-10 flex items-center justify-between border-t border-[#808080] bg-[#ece9d8] px-2 py-0.5 text-xs text-[#000]">
         <span>Done</span>
-        <span className="text-[#808080]">© 2024 Aakash Yadav</span>
+        <span className="text-[#808080]">© {new Date().getFullYear()} Aakash Yadav</span>
       </div>
     </div>
   );

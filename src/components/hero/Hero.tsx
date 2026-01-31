@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { LoadingScreen } from "./LoadingScreen";
 
@@ -16,6 +16,17 @@ export function Hero() {
   const [startCharacterAnimation, setStartCharacterAnimation] = useState(false);
   const [zoomToMonitor, setZoomToMonitor] = useState(false);
   const [showResetButton, setShowResetButton] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile for warning message
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Called by Scene when 3D assets are fully loaded
   const handleAssetsReady = useCallback(() => {
@@ -56,6 +67,7 @@ export function Hero() {
             onComplete={handleLoadingComplete}
             assetsReady={assetsReady}
             assetsProgress={assetsProgress}
+            isMobile={isMobile}
           />
         </div>
       )}
@@ -70,6 +82,7 @@ export function Hero() {
           showResetButton={showResetButton}
           onAssetsReady={handleAssetsReady}
           onAssetsProgress={handleAssetsProgress}
+          isMobile={isMobile}
         />
       </div>
     </section>

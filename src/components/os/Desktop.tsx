@@ -232,8 +232,8 @@ export function Desktop() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* Desktop Icons */}
-        <div className="absolute left-2 top-2 flex flex-col gap-2">
+        {/* Desktop Icons - hidden on mobile since window takes up most of screen */}
+        <div className="absolute left-2 top-2 hidden sm:flex flex-col gap-2">
           <Icon
             label={DESKTOP_ICONS.computer.label}
             icon={DESKTOP_ICONS.computer.icon}
@@ -261,8 +261,8 @@ export function Desktop() {
           />
         </div>
 
-        {/* Recycle Bin - bottom right */}
-        <div className="absolute bottom-[50px] right-2">
+        {/* Recycle Bin - bottom right, hidden on mobile */}
+        <div className="absolute bottom-[50px] right-2 hidden sm:block">
           <Icon
             label={DESKTOP_ICONS.recycle.label}
             icon={DESKTOP_ICONS.recycle.icon}
