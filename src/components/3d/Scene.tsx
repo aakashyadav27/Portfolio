@@ -350,7 +350,11 @@ function AssetsLoadingTracker({
   const hasNotifiedReady = useRef(false);
 
   useEffect(() => {
-    onAssetsProgress?.(progress);
+    // Defer to avoid setState during render of other components
+    const timer = setTimeout(() => {
+      onAssetsProgress?.(progress);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [progress, onAssetsProgress]);
 
   useEffect(() => {
@@ -549,8 +553,10 @@ export function Scene({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  position: "relative",
                 }}
               >
+                {/* Boot GIF with blur effect to match CRT */}
                 <img
                   src="/windows_xp_boot_screen_animation_in_hd_by_lukeinatordude_db6dw1k.gif"
                   alt="Loading..."
@@ -558,6 +564,45 @@ export function Scene({
                     maxWidth: "100%",
                     maxHeight: "100%",
                     objectFit: "contain",
+                    filter: "blur(0.3px)",
+                  }}
+                />
+                {/* Scanlines overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%)",
+                    backgroundSize: "100% 2px",
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* RGB color separation */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.03))",
+                    backgroundSize: "3px 100%",
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* Vignette effect */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    boxShadow: "inset 0 0 150px rgba(0, 0, 0, 0.4)",
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* Screen glow */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    boxShadow: "inset 0 0 80px rgba(255, 255, 255, 0.03)",
+                    pointerEvents: "none",
                   }}
                 />
               </div>
