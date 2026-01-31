@@ -453,16 +453,10 @@ export function Scene({
     };
   }, []);
 
-  const { progress: loadProgress, active: isLoadingAssets } = useProgress();
-  const assetsLoaded = !isLoadingAssets && loadProgress === 100;
-
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      {/* Loading overlay - shown while 3D assets are loading */}
-      {!assetsLoaded && <LoadingOverlay />}
-
-      {/* Name and time overlay - shown during 3D scene after assets loaded, hidden after zoom */}
-      {!showOS && assetsLoaded && <NameOverlay />}
+      {/* Name and time overlay - shown during 3D scene, hidden after zoom */}
+      {!showOS && <NameOverlay />}
 
       {/* Retro OS Overlay - shown after zoom completes, expands to fullscreen after boot */}
       {showOS && (
