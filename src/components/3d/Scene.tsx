@@ -18,9 +18,10 @@ interface SceneProps {
   showResetButton?: boolean;
   onAssetsReady?: () => void;
   onAssetsProgress?: (progress: number) => void;
+  isMobile?: boolean;
 }
 
-// Camera positions
+// Camera positions - Desktop
 const OVERVIEW_POSITION = new Vector3(12, 4, 11);
 const OVERVIEW_TARGET = new Vector3(5, 0.5, 5);
 
@@ -36,13 +37,24 @@ const MONITOR_TARGET = new Vector3(4, 1.05, 4.1);
 const DANCE_POSITION = new Vector3(10, 2, 10);
 const DANCE_TARGET = new Vector3(8, 1, 7);
 
+// Camera positions - Mobile (zoomed out more to see full animation)
+const MOBILE_OVERVIEW_POSITION = new Vector3(16, 6, 14);
+const MOBILE_OVERVIEW_TARGET = new Vector3(5, 0.5, 5);
+
+const MOBILE_APPROACH_POSITION = new Vector3(12, 4, 12);
+const MOBILE_APPROACH_TARGET = new Vector3(5, 1, 5);
+
+const MOBILE_MONITOR_POSITION = new Vector3(5.82, 1.15, 4.1);
+const MOBILE_MONITOR_TARGET = new Vector3(4, 1.05, 4.1);
+
 function CameraController({
   zoomToMonitor,
   onZoomComplete,
   resetTrigger,
   isDancing,
   onDanceCameraReady,
-  isApproaching
+  isApproaching,
+  isMobile = false
 }: {
   zoomToMonitor: boolean;
   onZoomComplete?: () => void;
@@ -50,7 +62,13 @@ function CameraController({
   isDancing: boolean;
   onDanceCameraReady?: () => void;
   isApproaching?: boolean;
+  isMobile?: boolean;
 }) {
+  // Select camera positions based on device
+  const approachPos = isMobile ? MOBILE_APPROACH_POSITION : APPROACH_POSITION;
+  const approachTarget = isMobile ? MOBILE_APPROACH_TARGET : APPROACH_TARGET;
+  const monitorPos = isMobile ? MOBILE_MONITOR_POSITION : MONITOR_POSITION;
+  const monitorTarget = isMobile ? MOBILE_MONITOR_TARGET : MONITOR_TARGET;
   const controlsRef = useRef<OrbitControlsImpl>(null);
   const { camera } = useThree();
   const progressRef = useRef(0);
@@ -71,13 +89,13 @@ function CameraController({
       progressRef.current = 0;
       animationSpeedRef.current = 0.004; // Slower animation for approach
       startPosRef.current.copy(camera.position);
-      targetPosRef.current.copy(APPROACH_POSITION);
-      targetLookRef.current.copy(APPROACH_TARGET);
+      targetPosRef.current.copy(approachPos);
+      targetLookRef.current.copy(approachTarget);
       if (controlsRef.current) {
         startTargetRef.current.copy(controlsRef.current.target);
       }
     }
-  }, [isApproaching, camera]);
+  }, [isApproaching, camera, approachPos, approachTarget]);
 
   useEffect(() => {
     if (zoomToMonitor && !hasCompletedRef.current) {
@@ -86,13 +104,13 @@ function CameraController({
       progressRef.current = 0;
       animationSpeedRef.current = 0.02; // Normal speed for final zoom
       startPosRef.current.copy(camera.position);
-      targetPosRef.current.copy(MONITOR_POSITION);
-      targetLookRef.current.copy(MONITOR_TARGET);
+      targetPosRef.current.copy(monitorPos);
+      targetLookRef.current.copy(monitorTarget);
       if (controlsRef.current) {
         startTargetRef.current.copy(controlsRef.current.target);
       }
     }
-  }, [zoomToMonitor, camera]);
+  }, [zoomToMonitor, camera, monitorPos, monitorTarget]);
 
   // Handle dance camera
   useEffect(() => {
@@ -109,13 +127,13 @@ function CameraController({
       isAnimatingRef.current = true;
       progressRef.current = 0;
       startPosRef.current.copy(camera.position);
-      targetPosRef.current.copy(MONITOR_POSITION);
-      targetLookRef.current.copy(MONITOR_TARGET);
+      targetPosRef.current.copy(monitorPos);
+      targetLookRef.current.copy(monitorTarget);
       if (controlsRef.current) {
         startTargetRef.current.copy(controlsRef.current.target);
       }
     }
-  }, [isDancing, camera]);
+  }, [isDancing, camera, monitorPos, monitorTarget]);
 
   // Reset camera when resetTrigger changes
   useEffect(() => {
@@ -123,13 +141,13 @@ function CameraController({
       isAnimatingRef.current = true;
       progressRef.current = 0;
       startPosRef.current.copy(camera.position);
-      targetPosRef.current.copy(MONITOR_POSITION);
-      targetLookRef.current.copy(MONITOR_TARGET);
+      targetPosRef.current.copy(monitorPos);
+      targetLookRef.current.copy(monitorTarget);
       if (controlsRef.current) {
         startTargetRef.current.copy(controlsRef.current.target);
       }
     }
-  }, [resetTrigger, camera]);
+  }, [resetTrigger, camera, monitorPos, monitorTarget]);
 
   useFrame(() => {
     if (!isAnimatingRef.current || !controlsRef.current) return;
@@ -144,7 +162,7 @@ function CameraController({
       controlsRef.current.update();
 
       // Only mark as completed for monitor zoom, not approach
-      if (targetPosRef.current.equals(MONITOR_POSITION)) {
+      if (targetPosRef.current.equals(monitorPos)) {
         hasCompletedRef.current = true;
         onZoomComplete?.();
       } else if (targetPosRef.current.equals(DANCE_POSITION)) {
@@ -338,37 +356,40 @@ const RetroButton = ({ onClick, children, style = {} }: { onClick: () => void; c
   </button>
 );
 
-// Component to track loading progress and notify parent
-function AssetsLoadingTracker({
-  onAssetsReady,
-  onAssetsProgress,
-}: {
-  onAssetsReady?: () => void;
-  onAssetsProgress?: (progress: number) => void;
-}) {
-  const { progress, active } = useProgress();
+// External progress tracker - polls the drei progress store instead of subscribing reactively
+function useExternalProgress(
+  onProgress?: (progress: number) => void,
+  onReady?: () => void
+) {
   const hasNotifiedReady = useRef(false);
+  const lastProgress = useRef(-1);
 
   useEffect(() => {
-    // Defer to avoid setState during render of other components
-    const timer = setTimeout(() => {
-      onAssetsProgress?.(progress);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [progress, onAssetsProgress]);
+    // Poll the progress store at intervals to avoid render-time setState
+    const interval = setInterval(() => {
+      // Access the zustand store directly via useProgress.getState()
+      const state = (useProgress as unknown as { getState: () => { progress: number; active: boolean } }).getState?.();
+      if (!state) return;
 
-  useEffect(() => {
-    // Assets are ready when loading is complete and no longer active
-    if (!active && progress === 100 && !hasNotifiedReady.current) {
-      hasNotifiedReady.current = true;
-      // Small delay to ensure shaders are compiled
-      setTimeout(() => {
-        onAssetsReady?.();
-      }, 100);
-    }
-  }, [active, progress, onAssetsReady]);
+      const { progress, active } = state;
 
-  return null;
+      if (progress !== lastProgress.current) {
+        lastProgress.current = progress;
+        onProgress?.(progress);
+      }
+
+      if (!active && progress === 100 && !hasNotifiedReady.current) {
+        hasNotifiedReady.current = true;
+        clearInterval(interval);
+        // Small delay to ensure shaders are compiled
+        setTimeout(() => {
+          onReady?.();
+        }, 100);
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [onProgress, onReady]);
 }
 
 export function Scene({
@@ -379,6 +400,7 @@ export function Scene({
   showResetButton = false,
   onAssetsReady,
   onAssetsProgress,
+  isMobile = false,
 }: SceneProps) {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [isDancing, setIsDancing] = useState(false);
@@ -472,6 +494,9 @@ export function Scene({
     }
   };
 
+  // Track asset loading progress externally (outside Canvas to avoid render-time setState)
+  useExternalProgress(onAssetsProgress, onAssetsReady);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -503,12 +528,15 @@ export function Scene({
             top: isFullScreen ? "0" : "50%",
             left: isFullScreen ? "0" : "50%",
             transform: isFullScreen ? "none" : "translate(-50%, -50%)",
-            width: isFullScreen ? "100%" : "min(72vw, 780px)",
-            height: isFullScreen ? "100%" : "min(62vh, 560px)",
+            width: isFullScreen ? "100%" : isMobile ? "95vw" : "min(72vw, 780px)",
+            height: isFullScreen ? "100%" : isMobile ? "70vh" : "min(62vh, 560px)",
             zIndex: 200,
-            borderRadius: isFullScreen ? "0" : "8px",
+            borderRadius: isFullScreen ? "0" : isMobile ? "4px" : "8px",
             overflow: "hidden",
-            boxShadow: isFullScreen ? "none" : `
+            boxShadow: isFullScreen ? "none" : isMobile ? `
+              0 0 0 4px #2a2a2a,
+              0 0 20px rgba(0, 0, 0, 0.8)
+            ` : `
               0 0 0 8px #2a2a2a,
               0 0 0 12px #1a1a1a,
               0 0 40px rgba(0, 0, 0, 0.8),
@@ -636,15 +664,15 @@ export function Scene({
       )}
 
       <Canvas
-        shadows
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+        shadows={!isMobile}
+        dpr={isMobile ? 1 : [1, 2]}
+        gl={{ antialias: !isMobile, alpha: true }}
         style={{ background: "transparent" }}
       >
         <PerspectiveCamera
           makeDefault
-          position={OVERVIEW_POSITION.toArray()}
-          fov={50}
+          position={isMobile ? MOBILE_OVERVIEW_POSITION.toArray() : OVERVIEW_POSITION.toArray()}
+          fov={isMobile ? 60 : 50}
         />
 
         <CameraController
@@ -653,13 +681,9 @@ export function Scene({
           resetTrigger={resetTrigger}
           isDancing={isDancing}
           isApproaching={startCharacterAnimation}
+          isMobile={isMobile}
         />
 
-        {/* Track asset loading progress */}
-        <AssetsLoadingTracker
-          onAssetsReady={onAssetsReady}
-          onAssetsProgress={onAssetsProgress}
-        />
 
         <Suspense fallback={<LoadingFallback />}>
           <Lighting />
