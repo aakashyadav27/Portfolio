@@ -16,6 +16,8 @@ interface SceneProps {
   zoomToMonitor?: boolean;
   onZoomComplete?: () => void;
   showResetButton?: boolean;
+  onAssetsReady?: () => void;
+  onAssetsProgress?: (progress: number) => void;
 }
 
 // Camera positions
@@ -336,12 +338,43 @@ const RetroButton = ({ onClick, children, style = {} }: { onClick: () => void; c
   </button>
 );
 
+// Component to track loading progress and notify parent
+function AssetsLoadingTracker({
+  onAssetsReady,
+  onAssetsProgress,
+}: {
+  onAssetsReady?: () => void;
+  onAssetsProgress?: (progress: number) => void;
+}) {
+  const { progress, active } = useProgress();
+  const hasNotifiedReady = useRef(false);
+
+  useEffect(() => {
+    onAssetsProgress?.(progress);
+  }, [progress, onAssetsProgress]);
+
+  useEffect(() => {
+    // Assets are ready when loading is complete and no longer active
+    if (!active && progress === 100 && !hasNotifiedReady.current) {
+      hasNotifiedReady.current = true;
+      // Small delay to ensure shaders are compiled
+      setTimeout(() => {
+        onAssetsReady?.();
+      }, 100);
+    }
+  }, [active, progress, onAssetsReady]);
+
+  return null;
+}
+
 export function Scene({
   startCharacterAnimation = false,
   onSeated,
   zoomToMonitor = false,
   onZoomComplete,
   showResetButton = false,
+  onAssetsReady,
+  onAssetsProgress,
 }: SceneProps) {
   const [resetTrigger, setResetTrigger] = useState(0);
   const [isDancing, setIsDancing] = useState(false);
@@ -575,6 +608,12 @@ export function Scene({
           resetTrigger={resetTrigger}
           isDancing={isDancing}
           isApproaching={startCharacterAnimation}
+        />
+
+        {/* Track asset loading progress */}
+        <AssetsLoadingTracker
+          onAssetsReady={onAssetsReady}
+          onAssetsProgress={onAssetsProgress}
         />
 
         <Suspense fallback={<LoadingFallback />}>

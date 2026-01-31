@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 
 interface LoadingScreenProps {
   onComplete?: () => void;
+  assetsReady?: boolean;
+  assetsProgress?: number;
 }
 
 const BOOT_LINES = [
@@ -19,11 +21,13 @@ const BOOT_LINES = [
   { text: "Starting Portfolio Environment...", delay: 1600 },
 ];
 
-export function LoadingScreen({ onComplete }: LoadingScreenProps) {
+export function LoadingScreen({ onComplete, assetsReady = false, assetsProgress = 0 }: LoadingScreenProps) {
   const [hasClicked, setHasClicked] = useState(false);
-  const [bootComplete, setBootComplete] = useState(false);
+  const [bootTextComplete, setBootTextComplete] = useState(false);
   const [lines, setLines] = useState<string[]>([]);
-  const [progress, setProgress] = useState(0);
+
+  // Both conditions must be met: boot text animation done AND 3D assets loaded
+  const isFullyReady = bootTextComplete && assetsReady;
 
   // Start boot sequence immediately
   useEffect(() => {
@@ -32,12 +36,11 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
     BOOT_LINES.forEach((line, index) => {
       const timer = setTimeout(() => {
         setLines(prev => [...prev, line.text]);
-        setProgress(((index + 1) / BOOT_LINES.length) * 100);
 
-        // Mark boot as complete after last message
+        // Mark boot text as complete after last message
         if (index === BOOT_LINES.length - 1) {
           setTimeout(() => {
-            setBootComplete(true);
+            setBootTextComplete(true);
           }, 500);
         }
       }, line.delay);
@@ -47,22 +50,12 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Complete when boot is done - if user already clicked, proceed immediately
-  // Otherwise wait for click
+  // Complete when fully ready AND user has clicked
   useEffect(() => {
-    if (bootComplete) {
-      if (hasClicked) {
-        onComplete?.();
-      }
-    }
-  }, [bootComplete, hasClicked, onComplete]);
-
-  // If user clicks after boot is complete, proceed immediately
-  useEffect(() => {
-    if (hasClicked && bootComplete) {
+    if (isFullyReady && hasClicked) {
       onComplete?.();
     }
-  }, [hasClicked, bootComplete, onComplete]);
+  }, [isFullyReady, hasClicked, onComplete]);
 
   const handleClick = () => {
     setHasClicked(true);
@@ -88,7 +81,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
         ))}
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar - shows actual 3D asset loading progress */}
       <div className="mb-8">
         <div
           style={{
@@ -103,20 +96,20 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               height: '100%',
               backgroundColor: '#00aa00',
             }}
-            animate={{ width: `${progress}%` }}
+            animate={{ width: `${assetsProgress}%` }}
             transition={{ duration: 0.3 }}
           />
         </div>
         <div style={{ color: '#666', marginTop: '4px', fontSize: '12px' }}>
-          Loading: {Math.round(progress)}%
-          {hasClicked && !bootComplete && (
+          Loading 3D Assets: {Math.round(assetsProgress)}%
+          {hasClicked && !isFullyReady && (
             <span style={{ marginLeft: '15px', color: '#00aa00' }}>✓ Sound enabled</span>
           )}
         </div>
       </div>
 
-      {/* Click to enter prompt - shown prominently when boot is complete */}
-      {bootComplete && !hasClicked && (
+      {/* Click to enter prompt - shown when fully ready */}
+      {isFullyReady && !hasClicked && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,8 +136,21 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
         </motion.div>
       )}
 
+      {/* Loading indicator when boot text done but assets still loading */}
+      {bootTextComplete && !assetsReady && (
+        <div className="text-center mb-8">
+          <motion.span
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            style={{ color: '#00aa00', fontSize: '12px' }}
+          >
+            Preparing 3D environment...
+          </motion.span>
+        </div>
+      )}
+
       {/* Subtle hint during boot */}
-      {!bootComplete && !hasClicked && (
+      {!bootTextComplete && !hasClicked && (
         <div className="text-center mb-8">
           <motion.span
             animate={{ opacity: [0.3, 0.6, 0.3] }}
