@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, Suspense } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
-import { useFBX } from "@react-three/drei";
+import { useEffect, useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useFBX, useGLTF } from "@react-three/drei";
 import { AnimationMixer, LoopRepeat, LoopOnce } from "three";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+
+// Preload all FBX files so they're ready before animation starts
+useFBX.preload("/models/Walking.fbx");
+useFBX.preload("/models/SitToType.fbx");
+useFBX.preload("/models/Typing.fbx");
+useFBX.preload("/models/Wave Hip Hop Dance.fbx");
 
 interface AnimatedCharacterProps {
   startAnimation?: boolean;
@@ -33,31 +38,11 @@ export function AnimatedCharacter({
   const hasCalledDanceReady = useRef(false);
   const prevIsDancing = useRef(false);
 
-  // Lazy-loaded animation states
-  const [sitToTypeFbx, setSitToTypeFbx] = useState<any>(null);
-  const [typingFbx, setTypingFbx] = useState<any>(null);
-  const [danceFbx, setDanceFbx] = useState<any>(null);
-
-  // Load walking FBX immediately (essential for first interaction)
+  // Load all FBX files
   const walkingFbx = useFBX("/models/Walking.fbx");
-
-  // Lazy load other animations when needed
-  useEffect(() => {
-    if (animationPhase === "walking" && !sitToTypeFbx) {
-      // Preload sit and type animations while walking
-      const loader = new FBXLoader();
-      loader.load("/models/SitToType.fbx", (fbx) => setSitToTypeFbx(fbx));
-      loader.load("/models/Typing.fbx", (fbx) => setTypingFbx(fbx));
-    }
-  }, [animationPhase, sitToTypeFbx]);
-
-  // Load dance animation only when dance mode is activated
-  useEffect(() => {
-    if (isDancing && !danceFbx) {
-      const loader = new FBXLoader();
-      loader.load("/models/Wave Hip Hop Dance.fbx", (fbx) => setDanceFbx(fbx));
-    }
-  }, [isDancing, danceFbx]);
+  const sitToTypeFbx = useFBX("/models/SitToType.fbx");
+  const typingFbx = useFBX("/models/Typing.fbx");
+  const danceFbx = useFBX("/models/Wave Hip Hop Dance.fbx");
 
   // Start walking when animation begins
   useEffect(() => {
@@ -95,28 +80,21 @@ export function AnimatedCharacter({
     let loop = true;
 
     switch (animationPhase) {
+      case "idle":
       case "walking":
       case "walkingToDance":
         clip = walkingFbx.animations[0];
         break;
       case "sitting":
-        // Wait for animation to load
-        if (!sitToTypeFbx?.animations?.[0]) return;
         clip = sitToTypeFbx.animations[0];
         loop = false;
         break;
       case "typing":
-        // Wait for animation to load
-        if (!typingFbx?.animations?.[0]) return;
         clip = typingFbx.animations[0];
         break;
       case "dancing":
-        // Wait for animation to load
-        if (!danceFbx?.animations?.[0]) return;
         clip = danceFbx.animations[0];
         break;
-      default:
-        return;
     }
 
     if (clip) {
@@ -193,10 +171,13 @@ export function AnimatedCharacter({
 
   if (!walkingFbx) return null;
 
+  // Hide character until animation starts (scale 0), then show at normal scale
+  const displayScale = startAnimation ? CHARACTER_SCALE : 0;
+
   return (
     <primitive
       object={walkingFbx}
-      scale={CHARACTER_SCALE}
+      scale={displayScale}
       position={[position.x, position.y, position.z]}
       rotation={[0, rotation, 0]}
     />
