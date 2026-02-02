@@ -4,10 +4,20 @@ import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { LoadingScreen } from "./LoadingScreen";
 
+// =============================================================================
+// PERFORMANCE TEST TOGGLE
+// Set to true to use optimized 3D assets (96% smaller, faster loading)
+// Set to false to use original assets (for comparison)
+// =============================================================================
+const USE_OPTIMIZED_ASSETS = true;
+
 // Dynamic import for 3D scene to avoid SSR issues
-const Scene = dynamic(() => import("../3d/Scene").then((mod) => mod.Scene), {
-  ssr: false,
-});
+const Scene = dynamic(
+  () => USE_OPTIMIZED_ASSETS
+    ? import("../3d/SceneOptimized").then((mod) => mod.SceneOptimized)
+    : import("../3d/Scene").then((mod) => mod.Scene),
+  { ssr: false }
+);
 
 export function Hero() {
   const [isLoading, setIsLoading] = useState(true);
