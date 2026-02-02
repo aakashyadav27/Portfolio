@@ -16,7 +16,7 @@ import { Vector3 } from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { DeskModelOptimized } from "./DeskModelOptimized";
 import { Lighting } from "./Lighting";
-import { AnimatedCharacterOptimized } from "./AnimatedCharacterOptimized";
+import { AnimatedCharacter } from "./AnimatedCharacter"; // Use FBX character (GLB animations don't work across files)
 import { Desktop } from "../os/Desktop";
 
 interface SceneProps {
@@ -697,7 +697,7 @@ export function SceneOptimized({
         <Suspense fallback={<LoadingFallback />}>
           <Lighting />
           <DeskModelOptimized />
-          <AnimatedCharacterOptimized
+          <AnimatedCharacter
             startAnimation={startCharacterAnimation}
             onSeated={onSeated}
             isDancing={isDancing}

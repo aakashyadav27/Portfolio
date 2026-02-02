@@ -70,38 +70,39 @@ public/
 
 ## 3D Assets
 
-### Optimized Assets (Currently in Use)
+### Optimized Office (Currently in Use)
 | File | Size | Description |
 |------|------|-------------|
-| `Walking_hq.glb` | 1.1 MB | Walking animation |
-| `SitToType_hq.glb` | 1.2 MB | Sit down animation |
-| `Typing_hq.glb` | 1.6 MB | Typing animation |
-| `Wave Hip Hop Dance_hq.glb` | 2.0 MB | Dance animation |
-| `90s_retro_office_pack_compressed.glb` | 3.4 MB | Office environment |
+| `90s_retro_office_pack_compressed.glb` | 3.4 MB | Office environment (Draco compressed) |
 
-### Original Assets (Preserved for Reference)
+### Character Animations (FBX)
 | File | Size | Description |
 |------|------|-------------|
-| `Walking.fbx` | 52 MB | Original walking animation |
-| `SitToType.fbx` | 52 MB | Original sit animation |
-| `Typing.fbx` | 53 MB | Original typing animation |
-| `Wave Hip Hop Dance.fbx` | 53 MB | Original dance animation |
+| `Walking.fbx` | 52 MB | Walking animation |
+| `SitToType.fbx` | 52 MB | Sit down animation |
+| `Typing.fbx` | 53 MB | Typing animation |
+| `Wave Hip Hop Dance.fbx` | 53 MB | Dance animation |
+
+### Original Office (Preserved)
+| File | Size | Description |
+|------|------|-------------|
 | `90s_retro_office_pack.glb` | 25 MB | Original office model |
 
-**Total reduction: ~235 MB → ~9.3 MB (96% smaller)**
+**Office optimization: 25 MB → 3.4 MB (86% smaller)**
+
+> Note: Character FBX files are kept as-is because GLB animations from separate files cannot be properly retargeted to a single skeleton.
 
 ## Performance
 
-The 3D assets were optimized using Blender with:
+The office model was optimized using Blender with:
 - **Draco compression** for mesh geometry
 - **WebP textures** downscaled to 1024px
 - **GLB format** for efficient web delivery
 
 | Metric | Before | After |
 |--------|--------|-------|
-| LCP (cached) | ~4.4s | ~1.7s |
-| LCP (fresh) | N/A | ~2.2s |
-| Asset Size | 235 MB | 9.3 MB |
+| LCP (fresh) | ~4.4s | ~2.2s |
+| Office Size | 25 MB | 3.4 MB |
 
 ## Configuration
 
